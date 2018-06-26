@@ -45,15 +45,15 @@ module Hubspot
       end
 
       def generate_url(path, params={}, options={})
-        Hubspot::Config.ensure! :hapikey
+        Hubspot::Config.ensure!(:hapikey) unless options[:hapikey]
         path = path.clone
         params = params.clone
         base_url = options[:base_url] || Hubspot::Config.base_url
-        params["hapikey"] = Hubspot::Config.hapikey unless options[:hapikey] == false
+        params["hapikey"] = (options[:hapikey].presence || Hubspot::Config.hapikey) unless options[:hapikey] == false
 
         if path =~ /:portal_id/
-          Hubspot::Config.ensure! :portal_id
-          params["portal_id"] = Hubspot::Config.portal_id if path =~ /:portal_id/
+          Hubspot::Config.ensure!(:portal_id) unless options[:portal_id]
+          params["portal_id"] = options[:portal_id].presence || Hubspot::Config.portal_id
         end
 
         params.each do |k,v|
